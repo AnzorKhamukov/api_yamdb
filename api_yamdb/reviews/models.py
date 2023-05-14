@@ -37,7 +37,6 @@ class Title(models.Model):
     name = models.CharField('Название', max_length=256)
     year = models.IntegerField('Год выпуска')
     description = models.CharField('Описание', max_length=256)
-    # genre = models.SlugField('Жанр')
     genre = models.ManyToManyField(Genre, through='GenreTitle')
     category = models.ForeignKey(
         Category,
@@ -61,6 +60,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
+    # Реализация связи жанра и произведения
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,

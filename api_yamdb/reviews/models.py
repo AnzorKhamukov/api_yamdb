@@ -5,10 +5,12 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    # name - required, string <= 256 characters
     name = models.CharField('Название категории', max_length=256)
-    # slug - required, string <= 50 characters ^[-a-zA-Z0-9_]+$
-    slug = models.SlugField('Slug категории')
+    slug = models.SlugField(
+        'Slug категории',
+        max_length=50,
+        unique=True,
+    )
 
     class Meta:
         verbose_name = 'Категория'
@@ -19,10 +21,12 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    # name - required, string <= 256 characters
     name = models.CharField('Название жанра', max_length=256)
-    # slug - required, string <= 50 characters ^[-a-zA-Z0-9_]+$
-    slug = models.SlugField('Slug жанра')
+    slug = models.SlugField(
+        'Slug жанра',
+        max_length=50,
+        unique=True,
+    )
 
     class Meta:
         verbose_name = 'Жанр'
@@ -42,8 +46,8 @@ class Title(models.Model):
         Category,
         # Доступ ко всем произведениям определенной категории
         related_name='titles',
-        # Для произведения категория не обязательное поле
-        blank=True,
+        # # Для произведения категория не обязательное поле
+        # blank=True,
         null=True,
         # При удалении категории, произведения сохранятся
         on_delete=models.SET_NULL,
@@ -66,12 +70,14 @@ class GenreTitle(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
+        verbose_name='Произведение',
     )
     genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        verbose_name='Жанр произведения',
     )
 
     class Meta:

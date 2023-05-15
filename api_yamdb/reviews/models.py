@@ -41,13 +41,13 @@ class Title(models.Model):
     name = models.CharField('Название', max_length=256)
     year = models.IntegerField('Год выпуска')
     description = models.CharField('Описание', max_length=256)
-    genre = models.ManyToManyField(Genre, through='GenreTitle')
+    genre = models.ManyToManyField(Genre, blank=True)
     category = models.ForeignKey(
         Category,
         # Доступ ко всем произведениям определенной категории
         related_name='titles',
         # # Для произведения категория не обязательное поле
-        # blank=True,
+        blank=True,
         null=True,
         # При удалении категории, произведения сохранятся
         on_delete=models.SET_NULL,
@@ -61,28 +61,3 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class GenreTitle(models.Model):
-    # Реализация связи жанра и произведения
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        verbose_name='Произведение',
-    )
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name='Жанр произведения',
-    )
-
-    class Meta:
-        verbose_name = 'Жанр произведения'
-        verbose_name_plural = 'Жанры произведения'
-
-    def __str__(self):
-        return f'{self.genre} {self.title}'

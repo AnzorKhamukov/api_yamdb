@@ -22,3 +22,8 @@ class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
+
+
+class GetTokenSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    confitmation_code = serializers.CharField()

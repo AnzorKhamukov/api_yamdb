@@ -1,14 +1,15 @@
 from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view, action
+from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
-
+from django.shortcuts import get_object_or_404
 
 from reviews.models import User
-from .serializers import UserSerializer, SignUpSerializer
+from .serializers import UserSerializer, SignUpSerializer, GetTokenSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,24 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = 'username',
     lookup_field = 'username'
     permission_classes = [AllowAny, ]
+
+    @action(
+        detail=False,
+        methods=(['GET', 'PATCH']),
+        permission_classes=[IsAuthenticated],
+    )
+    def me(self, request):
+        """Получение данных своей учётной записи."""
+        if request.method == 'GET':
+            serializer = UserSerializer(request.user)
+            return Response(serializer.data)
+
+        serializer = UserSerializer(
+            request.user, data=request.data, partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role)
+        return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -35,8 +54,23 @@ def signup(request):
     try:
         send_mail(message, token, [email], email_from, fail_silently=False)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except ValueError:
         raise serializers.ValidationError(
             'На данный email или имя пользователя уже зарегистрировались'
         )
+
+@api_view(['POST'])
+def get_token(request):
+    serializer = GetTokenSerializer
+    serializer.is_valid()
+    username = serializer.validated_data['username']
+    confirmation_code = serializer.validated_data['confirmation_code']
+    user = get_object_or_404(User, username=username)
+
+    if default_token_generator.chek_token(user, confirmation_code):
+        token = AccessToken.for_user(user)
+
+        return Response({'token': token}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

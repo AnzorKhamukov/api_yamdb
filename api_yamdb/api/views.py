@@ -21,11 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     permission_classes = [AllowAny, ]
 
-    @action(
-        detail=False,
-        methods=(['GET', 'PATCH']),
-        permission_classes=[IsAuthenticated],
-    )
+    @action(methods=(['GET', 'PATCH']),)
     def me(self, request):
         """Получение данных своей учётной записи."""
         if request.method == 'GET':
@@ -42,6 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def signup(request):
+    """Регистрация пользователей + отправка письма на почту."""
     serializer = SignUpSerializer
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['user']
@@ -60,8 +57,10 @@ def signup(request):
             'На данный email или имя пользователя уже зарегистрировались'
         )
 
+
 @api_view(['POST'])
 def get_token(request):
+    """Получение уникального токена."""
     serializer = GetTokenSerializer
     serializer.is_valid()
     username = serializer.validated_data['username']

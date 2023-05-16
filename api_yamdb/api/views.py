@@ -28,5 +28,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return title.reviews
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-        return serializer.save(author=self.request.user, title=title)
+        return serializer.save(
+            author=self.request.user,
+            title=serializer.validated_data['title']
+        )

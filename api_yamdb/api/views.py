@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
@@ -35,19 +35,29 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signup(request):
     """Регистрация пользователей + отправка письма на почту."""
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['username']
     email = serializer.validated_data['email']
-    user, created = User.objects.get_or_create(username=username, email=email)
     message = 'Ваш уникальный токен для регистрации'
     email_from = 'yamdb.token@administration.com'
-    token = default_token_generator.make_token(user)
 
     try:
-        send_mail(message, token, [email], email_from, fail_silently=False)
+        user, created = User.objects.get_or_create(
+            username=username,
+            email=email
+            )
+        confirmation_code = default_token_generator.make_token(user)
+
+        send_mail(message,
+                  confirmation_code,
+                  email_from,
+                  [email],
+                  fail_silently=False
+                  )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     except ValueError:
@@ -57,6 +67,7 @@ def signup(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def get_token(request):
     """Получение уникального токена."""
     serializer = GetTokenSerializer(data=request.data)
@@ -65,9 +76,9 @@ def get_token(request):
     confirmation_code = serializer.validated_data['confirmation_code']
     user = get_object_or_404(User, username=username)
 
-    if default_token_generator.chek_token(user, confirmation_code):
+    if default_token_generator.check_token(user, confirmation_code):
         token = AccessToken.for_user(user)
 
-        return Response({'token': token}, status=status.HTTP_200_OK)
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

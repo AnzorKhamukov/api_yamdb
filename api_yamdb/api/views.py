@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -24,16 +24,16 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = [IsAdminOrReadOnly]
-    # pagination_class = PageNumberPagination
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('name',)
+    permission_classes = [IsAdminOrReadOnly]
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    # permission_classes = [IsAdminOrReadOnly]
-    # pagination_class = PageNumberPagination
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('name',)
+    permission_classes = [IsAdminOrReadOnly]
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)

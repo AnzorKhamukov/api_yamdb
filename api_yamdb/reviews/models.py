@@ -40,7 +40,8 @@ class Title(models.Model):
     # Получение списка всех произведений, к которым пишут отзывы.
     name = models.CharField('Название', max_length=256)
     year = models.IntegerField('Год выпуска')
-    description = models.CharField('Описание', max_length=256)
+    description = models.TextField(
+        'Описание', max_length=256, blank=True, null=True)
     genre = models.ManyToManyField(Genre, blank=True)
     category = models.ForeignKey(
         Category,

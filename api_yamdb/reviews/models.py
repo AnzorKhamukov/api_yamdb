@@ -10,12 +10,7 @@ class User(AbstractUser):
         ('moderator', 'модератор'),
         ('admin', 'администратор'),
     )
-    username = models.CharField(
-        max_length=155,
-        verbose_name='Имя пользователя',
-        unique=True,
-        blank=False
-    )
+
     email = models.EmailField(
         max_length=155,
         unique=True,
@@ -24,6 +19,7 @@ class User(AbstractUser):
     bio = models.TextField(
         max_length=200,
         null=True,
+        blank=True,
         verbose_name='О себе'
         )
     role = models.CharField(
@@ -48,6 +44,5 @@ class User(AbstractUser):
         """Проверка на наличие прав модератора."""
         return self.user_type == 'moderator'
 
-    @property
     def __str__(self):
         return self.username

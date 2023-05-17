@@ -1,7 +1,6 @@
 from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, action
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
@@ -16,12 +15,11 @@ class UserViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с пользователями."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = PageNumberPagination
-    search_fields = 'username',
+    search_fields = ('username',)
     lookup_field = 'username'
     permission_classes = [AllowAny, ]
 
-    @action(methods=(['GET', 'PATCH']),)
+    @action(methods=(['GET', 'PATCH']), detail=False)
     def me(self, request):
         """Получение данных своей учётной записи."""
         if request.method == 'GET':
@@ -39,11 +37,11 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def signup(request):
     """Регистрация пользователей + отправка письма на почту."""
-    serializer = SignUpSerializer
+    serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data['user']
+    username = serializer.validated_data['username']
     email = serializer.validated_data['email']
-    user = User.objects.create(username=username, email=email)
+    user, created = User.objects.get_or_create(username=username, email=email)
     message = 'Ваш уникальный токен для регистрации'
     email_from = 'yamdb.token@administration.com'
     token = default_token_generator.make_token(user)
@@ -61,8 +59,8 @@ def signup(request):
 @api_view(['POST'])
 def get_token(request):
     """Получение уникального токена."""
-    serializer = GetTokenSerializer
-    serializer.is_valid()
+    serializer = GetTokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['username']
     confirmation_code = serializer.validated_data['confirmation_code']
     user = get_object_or_404(User, username=username)

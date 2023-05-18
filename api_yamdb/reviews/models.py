@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
-User = get_user_model()
+from django.contrib.auth.models import AbstractUser
 
 
 class Title(models.Model):
@@ -67,7 +66,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
-=======
+
 class Category(models.Model):
     name = models.CharField('Название категории', max_length=256)
     slug = models.SlugField(
@@ -126,3 +125,46 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class User(AbstractUser):
+    """Кастомная модель пользователя."""
+    USER_TYPE = (
+        ('user', 'пользователь'),
+        ('moderator', 'модератор'),
+        ('admin', 'администратор'),
+    )
+
+    email = models.EmailField(
+        max_length=254,
+        verbose_name='Почта пользователя'
+    )
+    bio = models.TextField(
+        max_length=200,
+        null=True,
+        verbose_name='О себе'
+    )
+    role = models.CharField(
+        max_length=12,
+        choices=USER_TYPE,
+        default='user',
+        verbose_name='Тип пользователя'
+    )
+
+    def __str__(self):
+        return self.username
+
+    @property
+    def is_user(self):
+        """Проверка на наличие прав авторизированного пользователя."""
+        return self.user_type == 'user'
+
+    @property
+    def is_admin(self):
+        """Проверка на наличие прав администратора."""
+        return self.user_type == 'admin' or self.is_superuser
+
+    @property
+    def is_moderator(self):
+        """Проверка на наличие прав модератора."""
+        return self.user_type == 'moderator'

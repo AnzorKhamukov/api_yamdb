@@ -66,6 +66,7 @@ class CategoryViewSet(ListCreateDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class GenreViewSet(ListCreateDestroyViewSet):
@@ -75,6 +76,7 @@ class GenreViewSet(ListCreateDestroyViewSet):
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -140,7 +142,7 @@ def signup(request):
         email_from,
         [email],
         fail_silently=False
-        )
+    )
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

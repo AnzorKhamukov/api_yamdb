@@ -1,19 +1,22 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, status, serializers, permissions, filters, mixins
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
-
-from reviews.models import Review, Title
-from .permissions import AuthorOrStaffEditPermission
-from .serializers import CommentSerializer, ReviewSerializer
-from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.tokens import AccessToken
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
 
+from .permissions import AuthorOrStaffEditPermission, IsAdminOrReadOnly
+from .serializers import CommentSerializer, ReviewSerializer
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title,  Review, Title, User
 from .serializers import (
-    CategorySerializer, GenreSerializer,
-    TitleSerializer, TitleReadSerializer, TitleCreateSerializer)
-from .permissions import IsAdminOrReadOnly
+    CategorySerializer, GenreSerializer, UserSerializer,
+    TitleSerializer, TitleReadSerializer, TitleCreateSerializer,
+    GetTokenSerializer, SignUpSerializer)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -81,18 +84,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             return TitleReadSerializer
         return TitleCreateSerializer
-=======
-from rest_framework import viewsets, status, serializers, permissions, filters
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view, action, permission_classes
-from rest_framework_simplejwt.tokens import AccessToken
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
-
-from reviews.models import User
-from .serializers import UserSerializer, SignUpSerializer, GetTokenSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

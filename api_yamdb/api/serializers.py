@@ -1,11 +1,7 @@
 from rest_framework import serializers, validators
-from reviews.models import Category, Genre, Title
-
-from reviews.models import Comment, Review, Title
-from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import User
+from reviews.models import Comment, Review, Title, User, Category, Genre
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -43,7 +39,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 message='Отзыв уже есть',
             ),
         ]
-
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -113,7 +108,6 @@ class TitleCreateSerializer(serializers.ModelSerializer):
             'genre',
             'category',
         )
-
 
 
 class UserSerializer(serializers.ModelSerializer):

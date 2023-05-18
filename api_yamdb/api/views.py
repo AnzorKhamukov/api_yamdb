@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import (
-    viewsets, status, serializers,
+    viewsets, status,
     permissions, filters, mixins)
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,7 +11,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 
-from .permissions import AuthorOrStaffEditPermission, IsAdminOrReadOnly, IsAdmin
+from .permissions import (
+    AuthorOrStaffEditPermission, IsAdminOrReadOnly, IsAdmin)
 from .serializers import CommentSerializer, ReviewSerializer
 
 from reviews.models import Category, Genre, Review, Title, User
@@ -96,11 +97,8 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
     permission_classes = [AllowAny, IsAuthenticated, IsAdmin, ]
-    http_method_names = [
-        'get', 'post', 'patch', 'delete', 'head', 'options', 'trace'
-    ]
 
-    @action(methods=('get', 'patch',), url_path='me',
+    @action(methods=('GET', 'PATCH'), url_path='me',
             detail=False, serializer_class=UserSerializer,
             permission_classes=(permissions.IsAuthenticated,))
     def me(self, request):
@@ -125,29 +123,25 @@ def signup(request):
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['username']
     email = serializer.validated_data['email']
-    message = 'Ваш уникальный токен для регистрации'
+    message = 'Ваш уникальный код для получения токена.'
     email_from = 'yamdb.token@administration.com'
-    user, created = User.objects.get_or_create(
-        username=username,
-        email=email
-    )
-    confirmation_code = default_token_generator.make_token(user)
-
     try:
-
-        send_mail(message,
-                  confirmation_code,
-                  email_from,
-                  [email],
-                  fail_silently=False
-                  )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    except ValueError:
-        raise serializers.ValidationError(
-            'На данный email или имя пользователя уже зарегистрировались'
+        user, created = User.objects.get_or_create(
+            username=username,
+            email=email
         )
+    except ValueError:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    confirmation_code = default_token_generator.make_token(user)
+    send_mail(
+        message,
+        confirmation_code,
+        email_from,
+        [email],
+        fail_silently=False
+        )
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

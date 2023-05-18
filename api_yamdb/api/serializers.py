@@ -130,15 +130,6 @@ class UserSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name', 'last_name', 'bio', 'role',
         )
 
-    def validate_data(self, data):
-        if User.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError('Этот email уже используется')
-
-        if User.objects.filter(username=data['username']).exists():
-            raise serializers.ValidationError('Это имя уже занято.')
-
-        return data
-
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериалайзер регистрации пользователей."""
@@ -159,8 +150,16 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['username'] == 'me':
             raise serializers.ValidationError(
-                'Имя пользователя me недопустимо'
+                'Имя пользователя "me" недоступно'
             )
+        if User.objects.filter(email=data['email'],
+                               username=data['username']).exists():
+            return data
+        if User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError('Этот email уже используется')
+        if User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError('Это имя уже занято.')
+
         return data
 
 

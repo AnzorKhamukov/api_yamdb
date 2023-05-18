@@ -12,7 +12,7 @@ from django.contrib.auth.tokens import default_token_generator
 from .permissions import AuthorOrStaffEditPermission, IsAdminOrReadOnly
 from .serializers import CommentSerializer, ReviewSerializer
 
-from reviews.models import Category, Genre, Title,  Review, Title, User
+from reviews.models import Category, Genre, Review, Title, User
 from .serializers import (
     CategorySerializer, GenreSerializer, UserSerializer,
     TitleSerializer, TitleReadSerializer, TitleCreateSerializer,

@@ -33,17 +33,17 @@ class User(AbstractUser):
     @property
     def is_user(self):
         """Проверка на наличие прав авторизированного пользователя."""
-        return self.user_type == 'user'
+        return self.role == 'user'
 
     @property
     def is_admin(self):
         """Проверка на наличие прав администратора."""
-        return self.user_type == 'admin' or self.is_superuser
+        return self.role == 'admin' or self.is_superuser
 
     @property
     def is_moderator(self):
         """Проверка на наличие прав модератора."""
-        return self.user_type == 'moderator'
+        return self.role == 'moderator'
 
 
 class Category(models.Model):

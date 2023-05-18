@@ -12,22 +12,23 @@ class User(AbstractUser):
     )
 
     email = models.EmailField(
-        max_length=155,
-        unique=True,
+        max_length=254,
         verbose_name='Почта пользователя'
-        )
+    )
     bio = models.TextField(
         max_length=200,
         null=True,
-        blank=True,
         verbose_name='О себе'
-        )
+    )
     role = models.CharField(
-        max_length=100,
+        max_length=12,
         choices=USER_TYPE,
         default='user',
         verbose_name='Тип пользователя'
-        )
+    )
+
+    def __str__(self):
+        return self.username
 
     @property
     def is_user(self):
@@ -43,6 +44,3 @@ class User(AbstractUser):
     def is_moderator(self):
         """Проверка на наличие прав модератора."""
         return self.user_type == 'moderator'
-
-    def __str__(self):
-        return self.username

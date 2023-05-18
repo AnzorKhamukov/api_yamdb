@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, serializers, permissions
+from rest_framework import viewsets, status, serializers, permissions, filters
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, action, permission_classes
@@ -16,11 +16,15 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     search_fields = ('username',)
+    filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
     permission_classes = [AllowAny, ]
+    http_method_names = [
+        'get', 'post', 'patch', 'delete', 'head', 'options', 'trace'
+    ]
 
-    @action(methods=('get', 'patch',),
-            detail=False, url_path='me',
+    @action(methods=('get', 'patch',), url_path='me',
+            detail=False, serializer_class=UserSerializer,
             permission_classes=(permissions.IsAuthenticated,))
     def me(self, request):
         """Получение данных своей учётной записи."""
@@ -46,13 +50,13 @@ def signup(request):
     email = serializer.validated_data['email']
     message = 'Ваш уникальный токен для регистрации'
     email_from = 'yamdb.token@administration.com'
+    user, created = User.objects.get_or_create(
+        username=username,
+        email=email
+    )
+    confirmation_code = default_token_generator.make_token(user)
 
     try:
-        user, created = User.objects.get_or_create(
-            username=username,
-            email=email
-            )
-        confirmation_code = default_token_generator.make_token(user)
 
         send_mail(message,
                   confirmation_code,
@@ -62,6 +66,7 @@ def signup(request):
                   )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     except ValueError:
         raise serializers.ValidationError(
             'На данный email или имя пользователя уже зарегистрировались'

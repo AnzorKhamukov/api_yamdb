@@ -1,37 +1,61 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Cериалайзер кастомного пользователя."""
-    username = serializers.CharField(required=True)
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        required=True,
+        max_length=150,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     email = serializers.EmailField(
         required=True,
+        max_length=254,
+        validators=[UniqueValidator(queryset=User.objects.all())]
     )
 
     class Meta:
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role',
-            )
+        )
+
+    def validate_data(self, data):
+        if User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError('Этот email уже используется')
+
+        if User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError('Это имя уже занято.')
+
+        return data
 
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериалайзер регистрации пользователей."""
-    username = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=150,
+        required=True
+    )
+    email = serializers.EmailField(
+        max_length=254,
+        required=True,
+    )
 
     class Meta:
         model = User
         fields = ('username', 'email')
 
-    def validate_data(self, value):
-        if User.objects.filter(username=value).exists():
-            return serializers.ValidationError('Это имя уже занято.')
-        if User.objects.filter(email=value).exists():
-            return serializers.ValidationError('Этот email уже используется')
-        return value
+    def validate(self, data):
+        if data['username'] == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя me недопустимо'
+            )
+        return data
 
 
 class GetTokenSerializer(serializers.ModelSerializer):

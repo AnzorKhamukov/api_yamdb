@@ -97,8 +97,11 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
     permission_classes = [AllowAny, IsAuthenticated, IsAdmin, ]
+    http_method_names = [
+        'get', 'post', 'patch', 'delete', 'head', 'options', 'trace'
+    ]
 
-    @action(methods=('GET', 'PATCH'), url_path='me',
+    @action(methods=('get', 'patch'), url_path='me',
             detail=False, serializer_class=UserSerializer,
             permission_classes=(permissions.IsAuthenticated,))
     def me(self, request):

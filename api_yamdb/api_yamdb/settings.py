@@ -26,10 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'reviews.apps.ReviewsConfig',
+    'api.apps.ApiConfig',
+    'djoser',
     'django_filters',
     'reviews',
     'api',
-    'djoser',
 ]
 
 AUTH_USER_MODEL = 'reviews.User'
@@ -96,7 +98,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 

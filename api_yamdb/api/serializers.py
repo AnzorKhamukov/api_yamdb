@@ -16,7 +16,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=False,
         slug_field='text',
         default=CurrentReviewDefault(),
-        queryset=Comment.objects.all()
+        queryset=Review.objects.all()
     )
 
     class Meta:

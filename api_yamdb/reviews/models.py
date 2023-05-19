@@ -50,6 +50,7 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
+    """Модель категорий."""
     name = models.CharField('Название категории', max_length=256)
     slug = models.SlugField(
         'Slug категории',
@@ -67,6 +68,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
+    """Модель жанров."""
     name = models.CharField('Название жанра', max_length=256)
     slug = models.SlugField(
         'Slug жанра',
@@ -84,6 +86,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    """Модель произведений."""
     # Получение списка всех произведений, к которым пишут отзывы.
     name = models.CharField('Название', max_length=256)
     year = models.IntegerField('Год выпуска')
@@ -113,6 +116,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    """Модель рецензий."""
     text = models.TextField('Содержание отзыва')
     pub_date = models.DateTimeField(
         'Дата публикации отзыва', auto_now_add=True, db_index=True
@@ -136,6 +140,7 @@ class Review(models.Model):
     )
 
     class Meta:
+        ordering = ('pub_date',)
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         # На одно произведение пользователь может оставить только один отзыв.
@@ -151,6 +156,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Модель комментариев к рецензии."""
     text = models.TextField('Содержание комментария')
     pub_date = models.DateTimeField(
         'Дата публикации комментария', auto_now_add=True, db_index=True
@@ -165,6 +171,7 @@ class Comment(models.Model):
     )
 
     class Meta:
+        ordering = ('pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 

@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
+
 from reviews.models import Review, Title
 
 # CurrentTitleDefault, CurrentReviewDefault сделаны
 # по аналогии с CurrentUserDefault.
+
 
 class CurrentTitleDefault:
     requires_context = True

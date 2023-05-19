@@ -30,6 +30,9 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    class Meta:
+        ordering = ('username',)
+
     @property
     def is_user(self):
         """Проверка на наличие прав авторизированного пользователя."""

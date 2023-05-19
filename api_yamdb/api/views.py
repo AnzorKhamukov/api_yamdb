@@ -1,15 +1,13 @@
-from django.shortcuts import get_object_or_404
-from rest_framework import (
-    viewsets, status,
-    permissions, filters, mixins)
+from rest_framework import (viewsets, status, permissions, filters, mixins)
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, action, permission_classes
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import (
+    LimitOffsetPagination, PageNumberPagination)
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
 
 from .permissions import (
     AuthorOrStaffEditPermission, IsAdminOrReadOnly, IsAdmin)
@@ -22,7 +20,7 @@ from .serializers import (
     GetTokenSerializer, SignUpSerializer)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):    
     serializer_class = CommentSerializer
     permission_classes = (AuthorOrStaffEditPermission,)
     pagination_class = LimitOffsetPagination
@@ -98,9 +96,9 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
     filter_backends = (filters.SearchFilter,)
     lookup_field = 'username'
-    permission_classes = [AllowAny, IsAuthenticated, IsAdmin, ]
+    permission_classes = [IsAdmin, ]
     http_method_names = [
-        'get', 'post', 'patch', 'delete', 'head', 'options', 'trace'
+        'get', 'post', 'patch', 'delete'
     ]
 
     @action(methods=('get', 'patch'), url_path='me',

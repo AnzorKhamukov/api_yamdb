@@ -2,7 +2,6 @@ from rest_framework import serializers, validators
 
 from .custom_serializers import CurrentReviewDefault, CurrentTitleDefault
 from reviews.models import Comment, Review, Title, Category, Genre
-from users.models import User
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -11,7 +11,7 @@ class Category(models.Model):
     name = models.CharField('Название категории', max_length=256)
     slug = models.SlugField(
         'Slug категории',
-        max_length=256,
+        max_length=50,
         unique=True,
     )
 

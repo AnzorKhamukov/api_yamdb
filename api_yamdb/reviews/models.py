@@ -130,9 +130,8 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews',
     )
     # Оценка в диапазоне от одного до десяти (целое число)
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         'Оценка произведения',
-        default=5,
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1),

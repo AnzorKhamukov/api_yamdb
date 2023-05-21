@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -44,7 +46,10 @@ class Title(models.Model):
     """Модель произведений."""
     # Получение списка всех произведений, к которым пишут отзывы.
     name = models.CharField('Название', max_length=256)
-    year = models.IntegerField('Год выпуска')
+    year = models.IntegerField(
+        'Год выпуска',
+        validators=[MaxValueValidator(datetime.now().year)]
+    )
     description = models.TextField(
         'Описание', max_length=256, null=True)
     genre = models.ManyToManyField(Genre, blank=True)

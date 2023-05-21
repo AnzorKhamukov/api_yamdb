@@ -27,7 +27,7 @@ class Genre(models.Model):
     name = models.CharField('Название жанра', max_length=50)
     slug = models.SlugField(
         'Slug жанра',
-        max_length=256,
+        max_length=50,
         unique=True,
     )
 

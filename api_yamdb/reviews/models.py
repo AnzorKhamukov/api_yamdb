@@ -24,7 +24,7 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Модель жанров."""
-    name = models.CharField('Название жанра', max_length=256)
+    name = models.CharField('Название жанра', max_length=50)
     slug = models.SlugField(
         'Slug жанра',
         max_length=50,
@@ -46,7 +46,7 @@ class Title(models.Model):
     name = models.CharField('Название', max_length=256)
     year = models.IntegerField('Год выпуска')
     description = models.TextField(
-        'Описание', max_length=256, blank=True, null=True)
+        'Описание', max_length=256, null=True)
     genre = models.ManyToManyField(Genre, blank=True)
     category = models.ForeignKey(
         Category,

@@ -1,8 +1,6 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django_filters.rest_framework.filterset import FilterSet
-from django_filters.filters import Filter
 
 from rest_framework import viewsets, filters, mixins
 from rest_framework.pagination import PageNumberPagination
@@ -13,6 +11,7 @@ from reviews.models import Category, Genre, Review, Title
 from .serializers import (
     CategorySerializer, GenreSerializer,
     TitleSerializer, TitleReadSerializer, TitleCreateSerializer,)
+from .filters import TitleFilter
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -76,17 +75,6 @@ class GenreViewSet(ListCreateDestroyViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-
-
-class TitleFilter(FilterSet):
-    """Фильтрация произведений."""
-
-    category = Filter(field_name='category__slug',)
-    genre = Filter(field_name='genre__slug',)
-
-    class Meta:
-        model = Title
-        fields = ('name', 'year', 'genre', 'category',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):

@@ -33,6 +33,7 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('text', 'author', 'review',)
     empty_value_display = '-пусто-'
 
+
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Genre, GenreAdmin)

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
 
 from rest_framework import status, permissions, viewsets, filters
 from rest_framework.response import Response
@@ -8,10 +9,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import api_view, action, permission_classes
 
-from .permissions import IsAdmin
+from api.permissions import IsAdmin
 from .serializers import (UserSerializer, GetTokenSerializer,
                           SignUpSerializer)
-from api_yamdb.settings import MESSAGE, EMAIL_FROM
 from users.models import User
 
 
@@ -63,9 +63,9 @@ def signup(request):
 
     confirmation_code = default_token_generator.make_token(user)
     send_mail(
-        MESSAGE,
+        settings.MESSAGE,
         confirmation_code,
-        EMAIL_FROM,
+        settings.EMAIL_FROM,
         [email],
         fail_silently=False
     )
